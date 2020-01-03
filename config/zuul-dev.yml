@@ -1,13 +1,46 @@
-spring: 
-  cloud:
+spring:
+  application:
+    name: zuul
+    cloud:
     config:
-      discovery:
-        enabled: true
-        service-id: config-server
-      name: zuul
-      profile: dev
-
+      override-none: true
+server:
+  port: 3001
+  
+  
 eureka:
   client:
     service-url:
       defaultZone: http://eureka1:2001/eureka, http://eureka2:2002/eureka
+      
+#默认网关配置，除非有特殊需求配置，在此可以不配
+#zuul:
+#  routes:
+#    item-service: /item-service/**
+#    user-service: /user-service/**
+#    order-service: /order-service/**
+
+zuul:
+  retryable: true
+
+ribbon:
+  ConnectTimeout: 1000   #链接超时时间
+  ReadTimeout: 1000    #等待接受响应时间
+  MaxAutoRetriesNextServer: 1    #向后重试服务器个数
+  MaxAutoRetries: 1   #单台服务器重试次数
+  
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 500 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+
+  
